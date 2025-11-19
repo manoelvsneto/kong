@@ -29,20 +29,27 @@ stages:
         tokenSuffix: '__'
 
     - task: KubernetesManifest@0
-      displayName: Deploy to Kubernetes cluster
+      displayName: Create Namespace
       inputs:
         kubernetesServiceConnection: K8SOracleCloud
         action: deploy
         manifests: |
           $(Build.SourcesDirectory)/k8s/namespace.yaml
+
+    - task: KubernetesManifest@0
+      displayName: Deploy to Kubernetes cluster
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
           $(Build.SourcesDirectory)/k8s/certificate.yaml
           $(Build.SourcesDirectory)/k8s/secrets.yaml
           $(Build.SourcesDirectory)/k8s/configmap.yaml
           $(Build.SourcesDirectory)/k8s/deployment.yaml
           $(Build.SourcesDirectory)/k8s/services.yaml                       
           $(Build.SourcesDirectory)/k8s/ingress.yaml
-          $(Build.SourcesDirectory)/k8s/auth-plugin.yaml
           $(Build.SourcesDirectory)/k8s/basic-auth-secret.yaml
         imagePullSecrets: |
           $(imagePullSecret)
-        containers: 'kong:latest'
+        containers: 'kong:3.4'
