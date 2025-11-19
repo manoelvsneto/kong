@@ -2,63 +2,78 @@
 
 ## ✅ Status: Rodando com Sucesso!
 
-Kong API Gateway deployado no Kubernetes com PostgreSQL.
+Kong API Gateway deployado no Kubernetes com PostgreSQL e painel administrativo.
 
-### Informações do Deploy
-- **Namespace**: kong
-- **Versão Kong**: 3.4
-- **Database**: PostgreSQL 15
-- **Domain**: kong.archse.eng.br
-- **Workers**: 4 processos
+## Acessos - Mesmo Domínio, Portas Diferentes
 
-## Acessos
+### URLs Principais
+- **Proxy HTTP**: http://kong.archse.eng.br
+- **Proxy HTTPS**: https://kong.archse.eng.br
+- **Admin UI**: https://kong.archse.eng.br/admin
+- **Admin API**: https://kong.archse.eng.br/kong-admin
 
-### URLs
-- **Proxy HTTP**: http://kong.archse.eng.br:80
-- **Proxy HTTPS**: https://kong.archse.eng.br:443
-- **Admin API** (interno): http://kong-service:8001
+### Portas Diretas (LoadBalancer)
+- **Proxy**: kong.archse.eng.br:80 (HTTP) / :443 (HTTPS)
+- **Admin API**: kong.archse.eng.br:8001
+- **Manager UI**: kong.archse.eng.br:8002
 
 ### Credenciais
-
-#### Autenticação Básica
 - **Username**: admin
 - **Password**: Kong@2024
+- **Admin Token**: admin-secret-token-2024
 
-#### PostgreSQL
-- **Host**: postgres-service
-- **Port**: 5432
-- **Database**: kong
-- **User**: kong
-- **Password**: Kong@Postgres2024
+## Arquitetura de Acesso
+
+```mermaid
+graph TD;
+    A[Kubernetes Cluster] -->|LoadBalancer| B(Kong Gateway);
+    B --> C[Serviços];
+    B --> D[Rotas];
+    C --> E[Backend Services];
+    D --> F[Plugins];
+    E --> G[Consumo];
+    F --> G;
+```
+
+## Deploy do Painel Admin
+
+Escolha uma das opções:
+
+### Kong Manager (Nativo)
+```bash
+kubectl apply -f k8s/kong-manager.yaml
+```
+
+### Kong Admin UI
+```bash
+kubectl apply -f k8s/kongadmin-deployment.yaml
+```
 
 ## Verificação
 
-### Status dos Pods
 ```bash
+# Verificar pods
 kubectl get pods -n kong
+
+# Acessar painel
+https://admin.kong.archse.eng.br
 ```
 
-### Logs em Tempo Real
-```bash
-kubectl logs -n kong -l app=kong -f
-```
+## Recursos
 
-### Testar Kong Admin API
-```bash
-# De dentro do cluster
-kubectl exec -n kong -it $(kubectl get pods -n kong -l app=kong -o jsonpath='{.items[0].metadata.name}') -- curl -s http://localhost:8001/status
+### Kong Gateway
+- CPU: 250m (request) / 1000m (limit)
+- Memory: 512Mi (request) / 1Gi (limit)
+- Portas: 8000, 8001, 8002, 8443, 8444, 8445
 
-# Resposta esperada:
-# {"database":{"reachable":true},"memory":{"workers_lua_vms":[...],"lua_shared_dicts":{...}},"server":{"connections_accepted":...}}
-```
+### Kong Admin UI
+- CPU: 50m (request) / 100m (limit)
+- Memory: 64Mi (request) / 128Mi (limit)
 
-### Testar Proxy
-```bash
-# Com autenticação básica
-curl -u admin:Kong@2024 https://kong.archse.eng.br
+## Próximos Passos
 
-# Sem autenticação (deve retornar 401)
-curl -i https://kong.archse.eng.br
-```
-
-## Arquitetura
+1. Acesse o painel admin
+2. Configure serviços e rotas pela UI
+3. Adicione plugins (rate-limiting, CORS, auth)
+4. Configure consumidores e credenciais
+5. Monitore tráfego e logs

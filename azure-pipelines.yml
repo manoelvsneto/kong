@@ -134,3 +134,13 @@ stages:
         action: deploy
         manifests: |
           $(Build.SourcesDirectory)/k8s/basic-auth-secret.yaml
+
+    - task: KubernetesManifest@0
+      displayName: Deploy Kong Admin UI
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
+          $(Build.SourcesDirectory)/k8s/kongadmin-deployment.yaml
+          $(Build.SourcesDirectory)/k8s/admin-api-ingress.yaml

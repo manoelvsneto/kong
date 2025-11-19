@@ -43,6 +43,12 @@ spec:
             secretKeyRef:
               name: kong-secrets
               key: KONG_PG_DATABASE
+        - name: KONG_ADMIN_GUI_URL
+          value: "https://kong.archse.eng.br"
+        - name: KONG_ADMIN_GUI_PATH
+          value: "/"
+        - name: KONG_ADMIN_GUI_LISTEN
+          value: "0.0.0.0:8002, 0.0.0.0:8445 ssl"
         - name: KONG_PROXY_ACCESS_LOG
           value: "/dev/stdout"
         - name: KONG_ADMIN_ACCESS_LOG
@@ -67,6 +73,12 @@ spec:
           protocol: TCP
         - name: admin-ssl
           containerPort: 8444
+          protocol: TCP
+        - name: manager
+          containerPort: 8002
+          protocol: TCP
+        - name: manager-ssl
+          containerPort: 8445
           protocol: TCP
         livenessProbe:
           httpGet:
