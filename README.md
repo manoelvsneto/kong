@@ -2,78 +2,44 @@
 
 ## ✅ Status: Rodando com Sucesso!
 
-Kong API Gateway deployado no Kubernetes com PostgreSQL e painel administrativo.
+Kong API Gateway com Konga Admin UI.
 
-## Acessos - Mesmo Domínio, Portas Diferentes
+## Acessos
 
-### URLs Principais
-- **Proxy HTTP**: http://kong.archse.eng.br
-- **Proxy HTTPS**: https://kong.archse.eng.br
-- **Admin UI**: https://kong.archse.eng.br/admin
-- **Admin API**: https://kong.archse.eng.br/kong-admin
+### URLs
+- **Proxy**: https://kong.archse.eng.br
+- **Konga Admin UI**: https://kong.archse.eng.br/admin
+- **Admin API**: https://kong.archse.eng.br/kong-admin (porta 8001)
 
-### Portas Diretas (LoadBalancer)
-- **Proxy**: kong.archse.eng.br:80 (HTTP) / :443 (HTTPS)
-- **Admin API**: kong.archse.eng.br:8001
-- **Manager UI**: kong.archse.eng.br:8002
-
-### Credenciais
+### Credenciais Kong
 - **Username**: admin
 - **Password**: Kong@2024
-- **Admin Token**: admin-secret-token-2024
 
-## Arquitetura de Acesso
+### Credenciais Konga
+Primeira configuração:
+1. Acesse https://kong.archse.eng.br/admin
+2. Crie conta de administrador
+3. Adicione conexão Kong:
+   - **Nome**: Kong Gateway
+   - **Kong Admin URL**: http://kong-service:8001
 
-```mermaid
-graph TD;
-    A[Kubernetes Cluster] -->|LoadBalancer| B(Kong Gateway);
-    B --> C[Serviços];
-    B --> D[Rotas];
-    C --> E[Backend Services];
-    D --> F[Plugins];
-    E --> G[Consumo];
-    F --> G;
-```
+### Database Konga
+- **Host**: konga-postgres-service
+- **Port**: 5432
+- **Database**: konga
+- **User**: konga
+- **Password**: Konga@2024
 
-## Deploy do Painel Admin
+## Primeiro Acesso ao Konga
 
-Escolha uma das opções:
+1. Acesse https://kong.archse.eng.br/admin
+2. Clique em "Sign up" para criar conta admin
+3. Faça login
+4. Em "Connections", clique em "New Connection"
+5. Preencha:
+   - Name: `Kong Gateway`
+   - Kong Admin URL: `http://kong-service:8001`
+6. Clique em "Create Connection"
+7. Ative a conexão
 
-### Kong Manager (Nativo)
-```bash
-kubectl apply -f k8s/kong-manager.yaml
-```
-
-### Kong Admin UI
-```bash
-kubectl apply -f k8s/kongadmin-deployment.yaml
-```
-
-## Verificação
-
-```bash
-# Verificar pods
-kubectl get pods -n kong
-
-# Acessar painel
-https://admin.kong.archse.eng.br
-```
-
-## Recursos
-
-### Kong Gateway
-- CPU: 250m (request) / 1000m (limit)
-- Memory: 512Mi (request) / 1Gi (limit)
-- Portas: 8000, 8001, 8002, 8443, 8444, 8445
-
-### Kong Admin UI
-- CPU: 50m (request) / 100m (limit)
-- Memory: 64Mi (request) / 128Mi (limit)
-
-## Próximos Passos
-
-1. Acesse o painel admin
-2. Configure serviços e rotas pela UI
-3. Adicione plugins (rate-limiting, CORS, auth)
-4. Configure consumidores e credenciais
-5. Monitore tráfego e logs
+Agora você pode gerenciar Kong via interface web! 🎉
