@@ -8,6 +8,13 @@ resources:
 - repo: self
 variables:
   imagePullSecret: 'regcred'
+  KONG_USERNAME: "__KONG_USERNAME__"
+  KONG_PASSWORD:  "__KONG_PASSWORD__"
+  KONG_ADMIN_TOKEN: "__KONG_ADMIN_TOKEN__"
+  KONG_PG_HOST: 'postgres-service.kong.svc.cluster.local'
+  KONG_PG_USER: 'kong'
+  KONG_PG_PASSWORD: 'Kong@Postgres2024'
+  KONG_PG_DATABASE: 'kong'
 stages:
 - stage: Build
   displayName: Build stage
