@@ -16,6 +16,24 @@ stages:
     displayName: Build
     steps:
 
+    - task: Kubernetes@1
+      displayName: 'Cleanup evicted pods'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'K8SOracleCloud'
+        command: 'delete'
+        arguments: 'pods --field-selector status.phase=Failed -n kong --ignore-not-found=true'
+      continueOnError: true
+
+    - task: Kubernetes@1
+      displayName: 'Cleanup old resources'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'K8SOracleCloud'
+        command: 'delete'
+        arguments: 'deployment kong-deployment -n kong --ignore-not-found=true'
+      continueOnError: true
+
     - task: replacetokens@3
       displayName: Replace tokens in k8s files
       inputs:
@@ -37,16 +55,56 @@ stages:
           $(Build.SourcesDirectory)/k8s/namespace.yaml
 
     - task: KubernetesManifest@0
-      displayName: Deploy to Kubernetes cluster
+      displayName: Deploy PostgreSQL
       inputs:
         kubernetesServiceConnection: K8SOracleCloud
         namespace: kong
         action: deploy
         manifests: |
           $(Build.SourcesDirectory)/k8s/postgres-deployment.yaml
+
+    - task: Kubernetes@1
+      displayName: 'Wait for PostgreSQL'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'K8SOracleCloud'
+        command: 'wait'
+        arguments: '--for=condition=ready pod -l app=postgres -n kong --timeout=300s'
+
+    - task: KubernetesManifest@0
+      displayName: Deploy Kong Configuration
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
           $(Build.SourcesDirectory)/k8s/secrets.yaml
           $(Build.SourcesDirectory)/k8s/configmap.yaml
+
+    - task: KubernetesManifest@0
+      displayName: Run Kong Migrations
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
           $(Build.SourcesDirectory)/k8s/kong-migrations-job.yaml
+
+    - task: Kubernetes@1
+      displayName: 'Wait for Migrations'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'K8SOracleCloud'
+        command: 'wait'
+        arguments: '--for=condition=complete job/kong-migrations -n kong --timeout=300s'
+
+    - task: KubernetesManifest@0
+      displayName: Deploy Kong Services
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
           $(Build.SourcesDirectory)/k8s/deployment.yaml
           $(Build.SourcesDirectory)/k8s/services.yaml
           $(Build.SourcesDirectory)/k8s/certificate.yaml
