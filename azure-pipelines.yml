@@ -63,14 +63,6 @@ stages:
         manifests: |
           $(Build.SourcesDirectory)/k8s/postgres-deployment.yaml
 
-    - task: Kubernetes@1
-      displayName: 'Wait for PostgreSQL'
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'K8SOracleCloud'
-        command: 'wait'
-        arguments: '--for=condition=ready pod -l app=postgres -n kong --timeout=5s'
-
     - task: KubernetesManifest@0
       displayName: Deploy Kong Configuration
       inputs:
