@@ -41,6 +41,20 @@ stages:
         arguments: 'deployment kong-deployment -n kong --ignore-not-found=true'
       continueOnError: true
 
+    - task: Kubernetes@1
+      displayName: 'Cleanup completed jobs'
+      inputs:
+        connectionType: 'Kubernetes Service Connection'
+        kubernetesServiceEndpoint: 'K8SOracleCloud'
+        command: 'delete'
+        arguments: 'job --all -n kong --ignore-not-found=true'
+      continueOnError: true
+
+    - script: |
+        echo "Aguardando limpeza de recursos..."
+        sleep 10
+      displayName: 'Wait for cleanup'
+
     - task: replacetokens@3
       displayName: Replace tokens in k8s files
       inputs:
