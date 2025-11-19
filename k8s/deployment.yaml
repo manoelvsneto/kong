@@ -17,14 +17,14 @@ spec:
     spec:
       initContainers:
       - name: kong-migrations
-        image: kong:3.4
+        image: kong:latest
         command: ['kong', 'migrations', 'bootstrap']
         envFrom:
         - secretRef:
             name: kong-secrets
       containers:
       - name: kong
-        image: kong:3.4
+        image: kong:latest
         envFrom:
         - secretRef:
             name: kong-secrets
