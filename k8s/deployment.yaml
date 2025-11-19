@@ -15,10 +15,6 @@ spec:
       labels:
         app: kong
     spec:
-      initContainers:
-      - name: wait-for-postgres
-        image: busybox:1.28
-        command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: kong
         image: kong:3.4
@@ -32,6 +28,21 @@ spec:
           value: "postgres-service"
         - name: KONG_PG_PORT
           value: "5432"
+        - name: KONG_PG_USER
+          valueFrom:
+            secretKeyRef:
+              name: kong-secrets
+              key: KONG_PG_USER
+        - name: KONG_PG_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: kong-secrets
+              key: KONG_PG_PASSWORD
+        - name: KONG_PG_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: kong-secrets
+              key: KONG_PG_DATABASE
         - name: KONG_PROXY_ACCESS_LOG
           value: "/dev/stdout"
         - name: KONG_ADMIN_ACCESS_LOG
@@ -61,14 +72,20 @@ spec:
           httpGet:
             path: /status
             port: 8001
-          initialDelaySeconds: 60
+            scheme: HTTP
+          initialDelaySeconds: 120
           periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /status
             port: 8001
-          initialDelaySeconds: 30
+            scheme: HTTP
+          initialDelaySeconds: 60
           periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
         resources:
           requests:
             cpu: 100m
