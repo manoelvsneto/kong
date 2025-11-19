@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: framework-ingress
+  namespace: default
+  annotations:
+    konghq.com/plugins: basic-auth-plugin
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+spec:
+  ingressClassName: kong
+  tls:
+  - hosts:
+    - kong.archse.eng.br
+    secretName: framework-tls
+  rules:
+  - host: kong.archse.eng.br
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: seu-servico
+            port:
+              number: 80
