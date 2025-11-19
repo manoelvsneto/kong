@@ -1,0 +1,21 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: admin-basic-auth
+  namespace: kong
+  labels:
+    konghq.com/credential: basic-auth
+stringData:
+  username: __KONG_USERNAME__
+  password: __KONG_PASSWORD__
+---
+apiVersion: configuration.konghq.com/v1
+kind: KongConsumer
+metadata:
+  name: admin-user
+  namespace: default
+  annotations:
+    kubernetes.io/ingress.class: kong
+username: admin
+credentials:
+- admin-basic-auth

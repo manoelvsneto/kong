@@ -1,0 +1,13 @@
+# Instalação dos CRDs do Kong
+# Execute primeiro: kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-controller/v3.0.0/config/crd/bases/configuration.konghq.com_kongplugins.yaml
+# Ou use este arquivo para reference
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: kong
+---
+# Este arquivo serve como referência
+# Os CRDs devem ser instalados via:
+# kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-controller/v3.0.0/config/crd/bases/configuration.konghq.com_kongplugins.yaml
+# kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-controller/v3.0.0/config/crd/bases/configuration.konghq.com_kongconsumers.yaml
+# kubectl apply -f https://raw.githubusercontent.com/Kong/kubernetes-ingress-controller/v3.0.0/config/crd/bases/configuration.konghq.com_kongingresses.yaml

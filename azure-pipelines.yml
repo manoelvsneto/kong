@@ -34,6 +34,7 @@ stages:
         kubernetesServiceConnection: K8SOracleCloud
         action: deploy
         manifests: |
+          $(Build.SourcesDirectory)/k8s/namespace.yaml
           $(Build.SourcesDirectory)/k8s/certificate.yaml
           $(Build.SourcesDirectory)/k8s/secrets.yaml
           $(Build.SourcesDirectory)/k8s/configmap.yaml
