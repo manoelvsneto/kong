@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: kong
-        image: kong:latest
+        image: kong:3.4
         envFrom:
         - secretRef:
             name: kong-secrets

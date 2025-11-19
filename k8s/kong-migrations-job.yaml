@@ -11,7 +11,7 @@ spec:
       restartPolicy: OnFailure
       containers:
       - name: kong-migrations
-        image: kong:latest
+        image: kong:3.4
         command: ['kong', 'migrations', 'bootstrap']
         envFrom:
         - secretRef:

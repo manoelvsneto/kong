@@ -54,4 +54,4 @@ stages:
           $(Build.SourcesDirectory)/k8s/basic-auth-secret.yaml
         imagePullSecrets: |
           $(imagePullSecret)
-        containers: 'kong:latest'
+        containers: 'kong:3.4'
