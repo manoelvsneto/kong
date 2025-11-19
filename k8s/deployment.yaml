@@ -15,6 +15,10 @@ spec:
       labels:
         app: kong
     spec:
+      initContainers:
+      - name: wait-for-postgres
+        image: busybox:1.28
+        command: ['sh', '-c', 'until nc -z postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
       containers:
       - name: kong
         image: kong:3.4
@@ -22,6 +26,12 @@ spec:
         - secretRef:
             name: kong-secrets
         env:
+        - name: KONG_DATABASE
+          value: "postgres"
+        - name: KONG_PG_HOST
+          value: "postgres-service"
+        - name: KONG_PG_PORT
+          value: "5432"
         - name: KONG_PROXY_ACCESS_LOG
           value: "/dev/stdout"
         - name: KONG_ADMIN_ACCESS_LOG
