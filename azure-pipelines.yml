@@ -118,14 +118,6 @@ stages:
           $(imagePullSecret)
         containers: 'kong:3.4'
 
-    - task: Kubernetes@1
-      displayName: 'Wait for Kong to be ready'
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'K8SOracleCloud'
-        command: 'wait'
-        arguments: '--for=condition=ready pod -l app=kong -n kong --timeout=300s'
-
     - task: KubernetesManifest@0
       displayName: Deploy Basic Auth
       inputs:
