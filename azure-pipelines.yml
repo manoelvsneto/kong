@@ -69,7 +69,7 @@ stages:
         connectionType: 'Kubernetes Service Connection'
         kubernetesServiceEndpoint: 'K8SOracleCloud'
         command: 'wait'
-        arguments: '--for=condition=ready pod -l app=postgres -n kong --timeout=300s'
+        arguments: '--for=condition=ready pod -l app=postgres -n kong --timeout=20s'
 
     - task: KubernetesManifest@0
       displayName: Deploy Kong Configuration
