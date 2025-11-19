@@ -82,14 +82,6 @@ stages:
         manifests: |
           $(Build.SourcesDirectory)/k8s/kong-migrations-job.yaml
 
-    - task: Kubernetes@1
-      displayName: 'Wait for Migrations'
-      inputs:
-        connectionType: 'Kubernetes Service Connection'
-        kubernetesServiceEndpoint: 'K8SOracleCloud'
-        command: 'wait'
-        arguments: '--for=condition=complete job/kong-migrations -n kong --timeout=300s'
-
     - task: KubernetesManifest@0
       displayName: Deploy Kong Services
       inputs:
