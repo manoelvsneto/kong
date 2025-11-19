@@ -15,13 +15,6 @@ spec:
       labels:
         app: kong
     spec:
-      initContainers:
-      - name: kong-migrations
-        image: kong:latest
-        command: ['kong', 'migrations', 'bootstrap']
-        envFrom:
-        - secretRef:
-            name: kong-secrets
       containers:
       - name: kong
         image: kong:latest
@@ -58,19 +51,19 @@ spec:
           httpGet:
             path: /status
             port: 8001
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /status
             port: 8001
-          initialDelaySeconds: 10
+          initialDelaySeconds: 30
           periodSeconds: 5
         resources:
           requests:
+            cpu: 250m
+            memory: 256Mi
+          limits:
             cpu: 500m
             memory: 512Mi
-          limits:
-            cpu: 1000m
-            memory: 1Gi
 

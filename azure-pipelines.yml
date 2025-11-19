@@ -43,11 +43,13 @@ stages:
         namespace: kong
         action: deploy
         manifests: |
-          $(Build.SourcesDirectory)/k8s/certificate.yaml
+          $(Build.SourcesDirectory)/k8s/postgres-deployment.yaml
           $(Build.SourcesDirectory)/k8s/secrets.yaml
           $(Build.SourcesDirectory)/k8s/configmap.yaml
+          $(Build.SourcesDirectory)/k8s/kong-migrations-job.yaml
           $(Build.SourcesDirectory)/k8s/deployment.yaml
-          $(Build.SourcesDirectory)/k8s/services.yaml                       
+          $(Build.SourcesDirectory)/k8s/services.yaml
+          $(Build.SourcesDirectory)/k8s/certificate.yaml
           $(Build.SourcesDirectory)/k8s/ingress.yaml
           $(Build.SourcesDirectory)/k8s/basic-auth-secret.yaml
         imagePullSecrets: |
