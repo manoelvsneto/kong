@@ -43,3 +43,68 @@ Primeira configuração:
 7. Ative a conexão
 
 Agora você pode gerenciar Kong via interface web! 🎉
+
+## Endpoints Disponíveis
+
+### Hello World
+- **URL**: https://kong.archse.eng.br/hello
+- **Método**: GET
+- **Descrição**: Serviço de exemplo interno
+
+### JSONPlaceholder API (Proxy Externo)
+- **URL Base**: https://kong.archse.eng.br/api/posts
+- **Métodos**: GET, POST, PUT, DELETE
+- **Descrição**: Proxy para JSONPlaceholder API
+
+#### Exemplos de Uso:
+
+```bash
+# Obter todos os posts
+curl https://kong.archse.eng.br/api/posts
+
+# Obter post específico
+curl https://kong.archse.eng.br/api/posts/1
+
+# Obter comentários de um post
+curl https://kong.archse.eng.br/api/posts/1/comments
+
+# Criar novo post
+curl -X POST https://kong.archse.eng.br/api/posts \
+  -H "Content-Type: application/json" \
+  -d '{"title":"foo","body":"bar","userId":1}'
+```
+
+#### Plugins Configurados:
+- ✅ CORS habilitado
+- ✅ Response Transformer (adiciona headers)
+- ✅ Rate Limiting (100 req/minuto)
+
+## Testando os Endpoints
+
+### Teste Rápido
+```bash
+# Hello World
+curl https://kong.archse.eng.br/hello
+
+# JSONPlaceholder - Comentários do Post 1
+curl https://kong.archse.eng.br/api/posts/1/comments
+```
+
+### Script de Testes Completo
+```bash
+bash test-jsonplaceholder.sh
+```
+
+### Configurar via Admin API
+```bash
+bash configure-jsonplaceholder.sh
+```
+
+## Gerenciando via Konga
+
+1. Acesse https://kong.archse.eng.br/admin
+2. Vá em "Services"
+3. Você verá:
+   - `hello-world-service` (serviço interno)
+   - `jsonplaceholder-api` (proxy externo)
+4. Configure plugins, rotas, etc via interface gráfica

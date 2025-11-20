@@ -126,3 +126,12 @@ stages:
         action: deploy
         manifests: |
           $(Build.SourcesDirectory)/k8s/basic-auth-secret.yaml
+
+    - task: KubernetesManifest@0
+      displayName: Deploy JSONPlaceholder Service
+      inputs:
+        kubernetesServiceConnection: K8SOracleCloud
+        namespace: kong
+        action: deploy
+        manifests: |
+          $(Build.SourcesDirectory)/k8s/jsonplaceholder-service.yaml
