@@ -1,0 +1,25 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: konga-config
+  namespace: kong
+data:
+  KONGA_SEED_KONG_NODE_DATA_SOURCE_FILE: "/app/kong_node.data"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: konga-init-config
+  namespace: kong
+data:
+  kong_node.data: |
+    {
+      "connection": {
+        "name": "Kong Gateway",
+        "type": "default",
+        "kong_admin_url": "http://kong-service:8001",
+        "health_checks": true,
+        "health_check_details": true,
+        "active": true
+      }
+    }
