@@ -121,3 +121,12 @@ nbproject
 /config/mssqlconfig.js
 /www/
 /seeds/
+
+README.md
+.env
+.DS_Store
+test
+screenshots
+*.md
+.vscode
+.idea

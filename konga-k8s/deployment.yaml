@@ -81,7 +81,8 @@ spec:
             name: konga-secrets
       containers:
       - name: konga
-        image: manoelvsneto/konga:latest
+        image: pantsel/konga:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - name: http
           containerPort: 1337
