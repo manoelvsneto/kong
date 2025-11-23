@@ -16,13 +16,6 @@ stages:
   - job: Build
     displayName: Build
     steps:
-    
-    - script: |
-        echo "Verificando conectividade de rede..."
-        ping -c 3 github.com || echo "GitHub não acessível"
-        ping -c 3 registry.npmjs.org || echo "NPM Registry não acessível"
-      displayName: 'Network Check'
-      continueOnError: true
 
     - task: Docker@2
       displayName: 'Build Konga Docker Image'
