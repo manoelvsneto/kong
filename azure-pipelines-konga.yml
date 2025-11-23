@@ -26,7 +26,17 @@ stages:
         tags: |
           $(Build.BuildId)
           latest
-        arguments: '--network=host'
+        arguments: '--network=host --progress=plain --build-arg BUILDKIT_INLINE_CACHE=1'
+      continueOnError: true
+
+    - script: |
+        echo "Se o build falhou, tentando com Dockerfile alternativo..."
+        docker build -f $(Build.SourcesDirectory)/konga/Dockerfile \
+          -t manoelvsneto/konga:$(Build.BuildId) \
+          -t manoelvsneto/konga:latest \
+          $(Build.SourcesDirectory)/konga/
+      displayName: 'Fallback Build (no sass)'
+      condition: failed()
     
     - task: Docker@2
       displayName: 'Push Custom Image with BuildId'

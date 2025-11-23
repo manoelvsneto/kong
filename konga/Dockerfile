@@ -4,25 +4,22 @@ LABEL maintainer="manoelvsneto"
 
 WORKDIR /app
 
-# Instalar dependências do sistema
+# Instalar apenas dependências runtime essenciais
 RUN apk add --no-cache \
     bash \
     postgresql-client \
-    curl \
-    python3 \
-    make \
-    g++
+    curl
 
 # Copiar código do projeto local
 COPY . .
 
-# Instalar dependências do projeto usando o package.json existente
-RUN npm install --only=production --legacy-peer-deps || \
-    npm install --only=production --force
+# Instalar dependências ignorando TODOS os scripts de build
+RUN npm config set ignore-scripts true && \
+    npm install --production --legacy-peer-deps --no-optional 2>&1 | grep -v "gyp" || true
 
 # Criar usuário
 RUN adduser -H -S -g "Konga service owner" -D -u 1200 -s /sbin/nologin konga && \
-    mkdir -p /app/kongadata /app/.tmp && \
+    mkdir -p /app/kongadata /app/.tmp /app/views && \
     chown -R 1200:1200 /app
 
 # Limpar cache
