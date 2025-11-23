@@ -1,7 +1,7 @@
 pool:
   name: Arm64
   vmImage: 'ubuntu-22.04'
-
+--
 trigger:
 - main
 resources:
