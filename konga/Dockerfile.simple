@@ -1,0 +1,23 @@
+FROM pantsel/konga:latest
+
+LABEL maintainer="manoelvsneto"
+LABEL description="Konga - Kong Admin UI"
+
+# A imagem oficial já está otimizada e suporta ARM64
+# Apenas customizações adicionais se necessário
+
+USER root
+
+# Adicionar ferramentas úteis
+RUN apk add --no-cache bash curl postgresql-client
+
+# Voltar para usuário konga
+USER konga
+
+EXPOSE 1337
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+    CMD curl -f http://localhost:1337/ || exit 1
+
+CMD ["node", "app.js"]

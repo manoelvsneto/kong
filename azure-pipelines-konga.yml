@@ -8,39 +8,13 @@ resources:
 - repo: self
 variables:
   imagePullSecret: 'regcred'
-  DOCKER_BUILDKIT: 1
 stages:
-- stage: Build
-  displayName: Build stage
+- stage: Deploy
+  displayName: Deploy Konga
   jobs:
-  - job: Build
-    displayName: Build
+  - job: Deploy
+    displayName: Deploy
     steps:
-
-    - task: Docker@2
-      displayName: 'Build Konga Docker Image'
-      inputs:
-        containerRegistry: 'DockerConnection'
-        repository: 'manoelvsneto/konga'
-        command: 'build'
-        Dockerfile: '$(Build.SourcesDirectory)/konga/Dockerfile'
-        tags: |
-          $(Build.BuildId)
-          latest
-        arguments: '--network=host --build-arg BUILDKIT_INLINE_CACHE=1'
-      continueOnError: true
-
-    - task: Docker@2
-      displayName: 'Push Konga Docker Image'
-      inputs:
-        containerRegistry: 'DockerConnection'
-        repository: 'manoelvsneto/konga'
-        command: 'push'
-        tags: |
-          $(Build.BuildId)
-          latest
-      condition: succeeded()
-      continueOnError: true
     
     - task: KubernetesManifest@0
       displayName: Create imagePullSecret
@@ -50,6 +24,7 @@ stages:
         action: createSecret
         secretName: $(imagePullSecret)
         dockerRegistryEndpoint: 'DockerConnection'
+      continueOnError: true
     
     - task: replacetokens@3
       displayName: Replace tokens in k8s files
@@ -64,7 +39,7 @@ stages:
         tokenSuffix: '__'
     
     - task: KubernetesManifest@0
-      displayName: Deploy to Kubernetes cluster
+      displayName: Deploy Konga to Kubernetes
       inputs:
         kubernetesServiceConnection: K8SOracleCloud
         namespace: kong

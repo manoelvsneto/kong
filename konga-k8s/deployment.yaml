@@ -74,7 +74,7 @@ spec:
         image: busybox:1.28
         command: ['sh', '-c', 'until nc -z konga-postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
       - name: konga-migration
-        image: manoelvsneto/konga:latest
+        image: pantsel/konga:latest
         command: ['node', './bin/konga.js', 'prepare', '--adapter', 'postgres', '--uri', 'postgresql://konga:Konga@2024@konga-postgres-service:5432/konga']
         envFrom:
         - secretRef:
@@ -82,7 +82,7 @@ spec:
       containers:
       - name: konga
         image: pantsel/konga:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         ports:
         - name: http
           containerPort: 1337
@@ -92,23 +92,25 @@ spec:
             name: konga-secrets
         - configMapRef:
             name: konga-config
-        volumeMounts:
-        - name: init-config
-          mountPath: /app
+        env:
+        - name: NODE_ENV
+          value: "production"
         livenessProbe:
           httpGet:
             path: /
             port: 1337
-          initialDelaySeconds: 60
+          initialDelaySeconds: 120
           periodSeconds: 10
           timeoutSeconds: 5
+          failureThreshold: 5
         readinessProbe:
           httpGet:
             path: /
             port: 1337
-          initialDelaySeconds: 30
+          initialDelaySeconds: 60
           periodSeconds: 5
           timeoutSeconds: 3
+          failureThreshold: 3
         resources:
           requests:
             cpu: 100m
