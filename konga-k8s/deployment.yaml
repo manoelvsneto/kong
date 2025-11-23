@@ -73,15 +73,9 @@ spec:
       - name: wait-for-postgres
         image: busybox:1.28
         command: ['sh', '-c', 'until nc -z konga-postgres-service 5432; do echo waiting for postgres; sleep 2; done;']
-      - name: konga-migration
-        image: pantsel/konga:latest
-        command: ['node', './bin/konga.js', 'prepare', '--adapter', 'postgres', '--uri', 'postgresql://konga:Konga@2024@konga-postgres-service:5432/konga']
-        envFrom:
-        - secretRef:
-            name: konga-secrets
       containers:
       - name: konga
-        image: pantsel/konga:latest
+        image: manoelvsneto/konga:latest
         imagePullPolicy: Always
         ports:
         - name: http

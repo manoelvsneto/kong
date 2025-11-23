@@ -130,3 +130,5 @@ screenshots
 *.md
 .vscode
 .idea
+coverage
+.nyc_output
