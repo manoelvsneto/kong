@@ -13,9 +13,20 @@ RUN apk add --no-cache \
 # Copiar código do projeto local
 COPY . .
 
-# Instalar dependências ignorando TODOS os scripts de build
+# Remover referências ao node-sass e grunt-contrib-sass do package.json
+RUN sed -i '/"node-sass":/d' package.json && \
+    sed -i '/"grunt-contrib-sass":/d' package.json && \
+    sed -i '/"grunt-sass":/d' package.json
+
+# Remover arquivos de configuração do sass
+RUN rm -f tasks/config/sass.js || true
+
+# Instalar dependências sem scripts
 RUN npm config set ignore-scripts true && \
-    npm install --production --legacy-peer-deps --no-optional 2>&1 | grep -v "gyp" || true
+    npm install --production --legacy-peer-deps --no-optional
+
+# Desabilitar hook do Grunt no Sails
+RUN echo "module.exports.hooks = { grunt: false };" > config/env/production.js
 
 # Criar usuário
 RUN adduser -H -S -g "Konga service owner" -D -u 1200 -s /sbin/nologin konga && \
